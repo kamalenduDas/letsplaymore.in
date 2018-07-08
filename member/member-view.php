@@ -4,17 +4,26 @@
 $clb = '';
 $sdate = date("Y-m-d");
 $cid = $_SESSION['cid'];
+$spt = $_SESSION['spt'];
 // echo "this line";
 // echo "$cid";
+$query="SELECT * FROM `club-info` WHERE `CID`= $cid ";
+$rslt1 = mysqli_query($con,$query);
+if(mysqli_num_rows($rslt1) == 0){
+  header('Location: mbr-sports-insert.php');
+   exit();
+}
+
 if(!isset($_SESSION['cid'])){
 
   $error = "Please Login To View your availbility informtion !";
   header('Location: member-login.php?error='.urlencode($error));
 }
-       elseif(isset($_GET['date'])){
+       elseif(isset($_GET['date']) && isset($_GET['sptname'])){
 
               //  $clb = $_GET['clubname'];
                 $sdate = $_GET['sdate'];
+                $spt = $_GET['sptname'];
 
 
        }
@@ -29,13 +38,12 @@ if(!isset($_SESSION['cid'])){
 
 
 
-$query2 = "INSERT INTO `book-info` (`CLUBNAME`,`DATE`) VALUES ((SELECT `CLUBNAME` FROM `club-info` WHERE `CID`='$cid')
-    ,STR_TO_DATE('$sdate', '%Y-%m-%d'));";
+$query2 = "INSERT INTO `book-info` (`CID`,`SPORT`,`DATE`) VALUES ($cid,'$spt',STR_TO_DATE('$sdate', '%Y-%m-%d'));";
 
     //insert data first
     mysqli_query($con,$query2);
-
-          $query = "select * from `book-info` where ( CLUBNAME= (SELECT `CLUBNAME` FROM `owner-info` WHERE `CID`='$cid') AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
+           
+          $query = "select * from `book-info` where ( CID= $cid AND SPORT='$spt' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
           AND DAY(DATE) = $sdate_dd);";
           $rslt = mysqli_query($con,$query);
           // $query_info = "select `owner-info`.`CID`, `owner-info`.`CLUBNAME`,`owner-info`.`EMAIL`,
@@ -119,6 +127,22 @@ $query2 = "INSERT INTO `book-info` (`CLUBNAME`,`DATE`) VALUES ((SELECT `CLUBNAME
 
            echo "Booked Time Slots For ". $sdate ; ?></h2> </p>
     <form class="" action="member-view.php" method="get">
+       <section>
+       <div class="input-group mb-3" >
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">SPORTS</label>
+            </div>
+            <select name="sptname"class="custom-select" id="inputGroupSelect01" >
+              <option value="#">Select Your Sport</option>
+                <!-- <option selected>Choose Your Preferred Sports</option> -->
+                <?php  while ($row = mysqli_fetch_assoc($rslt1)) : ?>
+            <option value= "<?php echo $row['SPORT1']; ?>"><?php echo $row['SPORT1']; ?></option>
+            <option value= "<?php echo $row['SPORT2']; ?>"><?php echo $row['SPORT2']; ?></option>
+            <option value= "<?php echo $row['SPORT3']; ?>"><?php echo $row['SPORT3']; ?></option>
+            <?php endwhile; ?>
+            </select>
+        </div>
+       </section>
       <input class="mdb-select colorful-select dropdown-primary" type="date" name="sdate" id="inputGroupSelect01" required>
       <button type="submit" class="btn btn-primary" name="date">ENTER</button>
       <!-- <input type="submit" name="date" > -->

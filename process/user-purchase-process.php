@@ -28,13 +28,18 @@ while ($row = mysqli_fetch_assoc($rslt)) {
     $bdate_mm = (int)substr($bdate,5,2);
 
     $bdate_dd = (int)substr($bdate,8,2);
+    
+    $bsport_letters = rtrim(ltrim((string)substr($bsport,0,4)," \t ")," \t ");
+    
+    $ordrid = $uid.$cid.$bsport_letters.$bdate_dd.$bdate_mm.$bdate_yy.rtrim(ltrim($bslot," \t ")," \t ");
 
-$u_query = "INSERT INTO `user-book-info` (`UID`,`CID`,`BSPORT`,`BDATE`,`BSLOT`) VALUES
-($uid,$cid,'$bsport',STR_TO_DATE('$bdate', '%Y-%m-%d'),'$bslot')";
+    echo $ordrid;
 
+$u_query = "INSERT INTO `user-book-info` (`UID`,`CID`,`BSPORT`,`BDATE`,`BSLOT`,`ORDRID`) VALUES
+($uid,$cid,'$bsport',STR_TO_DATE('$bdate', '%Y-%m-%d'),'$bslot','$ordrid')";
 $status = 'BOOKED';
 
-$b_query = "UPDATE `book-info` SET ".$bslot."= '$status' WHERE ( CLUBNAME= '$clb' AND YEAR(DATE)=$bdate_yy AND MONTH(DATE)=$bdate_mm
+$b_query = "UPDATE `book-info` SET ".$bslot."= '$status' WHERE ( CID= $cid AND SPORT='$bsport' AND YEAR(DATE)=$bdate_yy AND MONTH(DATE)=$bdate_mm
   AND DAY(DATE) = $bdate_dd);" ;
 
 

@@ -1,5 +1,5 @@
-<?php include '../database/database.php';?>
-<?php session_start();
+<?php include '../database/database.php';
+ session_start();
 
 if(isset($_SESSION['uid'])){
   $uid = $_SESSION['uid'];
@@ -11,7 +11,11 @@ if(isset($_SESSION['uid'])){
 
 }
 //get the club names where session sport & session address matches
+// $sport = $_GET["sport"];
 $spt = $_SESSION["spt"]; $loc = $_SESSION["loc"];
+if($spt == ''){
+  header('Location: ../index.php');
+}
 if(is_numeric($loc)){
   preg_match_all('!\d+!', $loc, $matches);
   $loc = implode(' ', $matches[0]);
@@ -30,12 +34,10 @@ elseif(is_string($loc)) {
 
 }
 
-$query1="select * from `club-info` where SPORTS='$spt' and (ADDRESS LIKE '%$loc1%' or ADDRESS like '%$loc2%' or PIN LIKE '%$loc%');";
+$query1="select * from `club-info` where ( SPORT1='$spt' OR SPORT2 = '$spt' OR SPORT3 = '$spt') and (ADDRESS LIKE '%$loc1%' or ADDRESS like '%$loc2%' or PIN LIKE '%$loc%');";
 $rslt1 = mysqli_query($con,$query1);
 
-?>
 
-<?php
 date_default_timezone_set("Asia/Kolkata");
 
 //default date will be today's date
@@ -46,6 +48,14 @@ date_default_timezone_set("Asia/Kolkata");
   if(isset($_GET['clubname'])){
 
       $clb = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_GET['clubname']))," \t ")," \t ");
+      $sport = $_GET["sport"];
+      // GET CID OF THE CLUB FROM CLUB-INFO
+          //  $sql = "SELECT * FROM `CLUB-INFO` WHERE CLUBNAME ='$clb'";
+          //  $sql_rslt = mysqli_query($con,$sql);
+          //  while ($row_sql = mysqli_fetch_assoc($sql_rslt)){
+          //     $CID = $row_sql['CID'];
+          //  }
+
 
       $sdate_yy = (int)substr($sdate,0,4);
 
@@ -54,7 +64,7 @@ date_default_timezone_set("Asia/Kolkata");
       $sdate_dd = (int)substr($sdate,8,2);
 
       // insert some default data in book-info about that specific date & club
-      $query2 = "INSERT INTO `book-info` (`CLUBNAME`,`DATE`) VALUES ((select CLUBNAME FROM `club-info` where CLUBNAME = '$clb'), STR_TO_DATE('$sdate', '%Y-%m-%d'));";
+      $query2 = "INSERT INTO `book-info` (`CID`,`SPORT`,`DATE`) VALUES ((select CID FROM `club-info` where CLUBNAME = '$clb'),'$spt', STR_TO_DATE('$sdate', '%Y-%m-%d'));";
 
       //insert data first
       mysqli_query($con,$query2);
@@ -62,7 +72,7 @@ date_default_timezone_set("Asia/Kolkata");
 
 
       // get data from book-info about that specific date & club
-      $query = "select * from `book-info` where ( CLUBNAME= '$clb' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
+      $query = "select * from `book-info` where ( CID= (select CID FROM `club-info` where CLUBNAME = '$clb') AND SPORT= '$spt' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
       AND DAY(DATE) = $sdate_dd);";
 
       $_SESSION['slctd_clb'] = $clb;
@@ -74,8 +84,8 @@ date_default_timezone_set("Asia/Kolkata");
       }
       // when date is selected from this page check if booking named button is pressed
           if(isset($_GET['clbname'])){
-
-            $clb = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_GET['clbname']))," \t ")," \t ");
+              $clb =  $_GET['clbname'];
+          //  $clb = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_GET['clbname']))," \t ")," \t ");
 
             $sdate = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_GET['sdate']))," \t ")," \t ");
           //  $_SESSION['slctd_date'] = $sdate;
@@ -96,9 +106,10 @@ date_default_timezone_set("Asia/Kolkata");
                                $sdate_mm = (int)substr($sdate,5,2);
 
                                $sdate_dd = (int)substr($sdate,8,2);
-
+                                 echo $spt;
+                                 echo $sport;
                                // insert some default data in book-info about that specific date & club
-                               $query2 = "INSERT INTO `book-info` (`CLUBNAME`,`DATE`) VALUES ((select CLUBNAME FROM `club-info` where CLUBNAME = '$clb'), STR_TO_DATE('$sdate', '%Y-%m-%d'));";
+                               $query2 = "INSERT INTO `book-info` (`CID`,`SPORT`,`DATE`) VALUES ((select CID FROM `club-info` where CLUBNAME = '$clb'),'$spt', STR_TO_DATE('$sdate', '%Y-%m-%d'));";
 
                                //insert data first
                                mysqli_query($con,$query2);
@@ -106,7 +117,7 @@ date_default_timezone_set("Asia/Kolkata");
 
 
                                // get data from book-info about that specific date & club
-                               $query = "select * from `book-info` where ( CLUBNAME= '$clb' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
+                               $query = "select * from `book-info` where ( CID= (select CID FROM `club-info` where CLUBNAME = '$clb') AND SPORT='$spt' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
                                AND DAY(DATE) = $sdate_dd);";
 
                                $_SESSION['slctd_clb'] = $clb;
@@ -223,7 +234,7 @@ date_default_timezone_set("Asia/Kolkata");
             </div>
             <!-- input clubname -->
             <select class="custom-select" id="inputGroupSelect01" name="clbname">
-          <option disabled selected> <?php echo $clb; ?></option>
+          <option  selected> <?php echo $clb; ?></option>
     <?php  while ($row1 = mysqli_fetch_assoc($rslt1)) : ?>
           <option value= "<?php echo $row1['CLUBNAME']; ?>"><?php echo $row1['CLUBNAME']; ?></option>
           <?php endwhile; ?>
@@ -276,7 +287,7 @@ date_default_timezone_set("Asia/Kolkata");
                      }
               }
               elseif($row[$a] == 'BOOKED'){
-               echo "<button type=\"button\" class=\"btn btn-blue-grey btn-lg\" disabled>07:00 - 08:00</button>";
+               echo "<button type=\"button\" class=\"btn btn-blue-grey btn-lg\" disabled>".$row[$a]."</button>";
               }
               else{
                echo "<button type=\"button\" class=\"btn btn-dark btn-lg\" disabled>".$row[$a]."</button>";
@@ -299,7 +310,7 @@ date_default_timezone_set("Asia/Kolkata");
                      }
               }
               elseif($row[$a] == 'BOOKED'){
-               echo "<button type=\"button\" class=\"btn btn-blue-grey btn-lg\" disabled>08:00 - 09:00</button>";
+               echo "<button type=\"button\" class=\"btn btn-blue-grey btn-lg\" disabled>".$row[$a]."</button>";
               }
               else{
                echo "<button type=\"button\" class=\"btn btn-dark btn-lg\" disabled>".$row[$a]."</button>";

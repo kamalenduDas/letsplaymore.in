@@ -26,8 +26,8 @@ if(!isset($_SESSION['cid'])){
 
      <!-- Bootstrap CSS -->
      <link rel="stylesheet" href="../css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-       <link rel="stylesheet" href="/css/mdb.min.css">
-       <link rel="stylesheet" href="/css/custom-style.css">
+       <link rel="stylesheet" href="../css/mdb.min.css">
+       <link rel="stylesheet" href="../css/custom-style.css">
      <title>Tell Us More</title>
    </head>
    <body>
@@ -104,9 +104,17 @@ if(!isset($_SESSION['cid'])){
          <!-- <label for="inputEmail4">CLUBNAME</label> -->
          <input type="hidden" class="form-control"  name="fname" placeholder= "<?php echo $club; ?>" disabled>
        <!-- </div> -->
-       <div class="form-group col-md-6">
-         <label for="inputEmail4">SPORTS</label>
-         <input type="text" class="form-control" name="spt" placeholder="eg: football">
+       <div class="form-group col-md-4">
+         <label for="inputEmail4">SPORT1(REQUIRED)</label>
+         <input type="text" class="form-control" name="spt1" placeholder="eg: football">
+       </div>
+       <div class="form-group col-md-4">
+         <label for="inputEmail4">SPORT2(OPTIONAL)</label>
+         <input type="text" class="form-control" name="spt2" placeholder="eg: cricket">
+       </div>
+       <div class="form-group col-md-4">
+         <label for="inputEmail4">SPORT3(OPTIONAL)</label>
+         <input type="text" class="form-control" name="spt3" placeholder="eg: hockey">
        </div>
        <!-- <div class="form-group col-md-6"> -->
          <!-- <label for="inputEmail4">EMAIL</label> -->
@@ -115,22 +123,22 @@ if(!isset($_SESSION['cid'])){
      </div>
      <div class="form-group">
        <label for="inputAddress">ADDRESS</label>
-       <input type="text" class="form-control" id="inputAddress" name="addr" placeholder="some street , some number">
+       <input type="text" class="form-control" id="inputAddress" name="addr" placeholder="eg: some street , some number">
      </div>
 
      <div class="form-row">
        <div class="form-group col-md-6">
          <label for="inputEmail4">PINCODE</label>
-         <input type="text" class="form-control" name="pin" placeholder= "700###">
+         <input type="text" class="form-control" name="pin" placeholder= "eg: 700###">
        </div>
        <div class="form-group col-md-6">
          <label for="inputEmail4">PRICE</label>
-         <input type="text" class="form-control" name="price" placeholder="999">
+         <input type="text" class="form-control" name="price" placeholder="eg: 999">
        </div>
        </div>
        <div class="form-group">
          <label for="inputAddress">AMENITIES</label>
-         <input type="text" class="form-control" id="inputAddress" name="amnts" placeholder="#)club has fencing all around">
+         <input type="text" class="form-control" id="inputAddress" name="amnts" placeholder="eg: #)club has fencing all around">
        </div>
 
      <button type="submit" name="submit" class="btn btn-primary">INSERT NOW</button>

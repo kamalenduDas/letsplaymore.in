@@ -16,8 +16,8 @@ $sdate_mm = (int)substr($sdate,5,2);
 
 $sdate_dd = (int)substr($sdate,8,2);
 
-$sql = "SELECT UID,BDATE,CLUBNAME,BSLOT,BSPORT FROM `user-book-info`,`club-info` WHERE ( UID=$uid AND YEAR(BDATE) = $sdate_yy AND MONTH(BDATE) = $sdate_mm AND DAY(BDATE)=$sdate_dd AND `user-book-info`.CID = `club-info`.CID)";
-
+$sql = "SELECT * FROM `user-book-info`,`club-info` WHERE  UID=$uid AND `user-book-info`.CID = `club-info`.CID AND YEAR(BDATE)=$sdate_yy AND MONTH(BDATE)=$sdate_mm AND DAY(BDATE)=$sdate_dd";
+//AND YEAR(BDATE) = $sdate_yy AND MONTH(BDATE) = $sdate_mm AND DAY(BDATE)=$sdate_dd
 $rslt = mysqli_query($con,$sql);
 // while($row = mysqli_fetch_assoc($rslt)){
 //   echo $row['UID'];
@@ -81,7 +81,7 @@ $rslt = mysqli_query($con,$sql);
      <div class="alert alert-success" role="alert">
       succes in booking
       </div>
-     <h3><a href="booking.php" class="badge badge-success">Success in booking, click here to go back for more</a></h3>
+     <h3><a href="../index.php" class="badge badge-success">Success in booking, click here to go back for more</a></h3>
      <!-- <a href=>back to booking</a> -->
      <h1>Your Booking Information</h1>
 
@@ -103,24 +103,27 @@ $rslt = mysqli_query($con,$sql);
                                 <tbody>
 
                                   <p>
-                                    <form class="" action="/process/user_ckeckout_process.php" method="post">
+                                    <!-- <form class="" action="../process/user_checkout_process.php" method="post"> -->
                                     <?php
-
+                                    echo "ORDER ID : ". $row['ORDRID']."<br>";
                                     echo "SPORT : ".$row['BSPORT']."<br>";
                                     echo "CLUBNAME : ".$row['CLUBNAME']."<br>";
                                     echo "DATE : ".$row['BDATE']."<br>";
                                     echo "SLOT : ".$row['BSLOT']."<br>";
+                                    
 
                                     ?>
                                     <input type="hidden" name="cid" value="<?php echo $row['CID']; ?>">
-                                    <hr class="hr-dark">
-                                    <?php if($row['MBR'] == 1):?>
-                                    <button type="button" class="btn btn-success">GRANTED</button>
-                                    <?php else: ?>
-                                      <!-- <button type="submit" name="grant" value="grant" class="btn btn-success">CONFIRM & CHECKOUT</button> -->
-                                    <?php endif; ?>
-                                    <!-- <button type="submit" name="revoke" value="revoke" class="btn btn-warning">REVOKE</button> -->
-                                    <button type="submit" name="delete" value="delete" class="btn btn-danger">DELETE FROM CART</button>
+                                    <input type="hidden" name="cid" value="<?php echo $row['CID']; ?>">
+                                    <?php
+                                      $diff = date_diff(date_create($row['BDATE']),date_create(date("Y-m-d")));
+                                     if($diff->format('%R%a') <= 0){
+                                         echo "<button type=\"submit\" name=\"delete\" value=\"delete\" class=\"btn btn-danger\">DELETE FROM CART</button>";
+                                         echo "<button type=\"submit\" name=\"confirm\" value=\"delete\" class=\"btn btn-success\">CONFIRM BOOKING</button>";
+                                     }
+                                     //echo "date diff :".$diff->format('%a');
+                                    ?>
+                                    
                                   </form>
 
                                   </p>

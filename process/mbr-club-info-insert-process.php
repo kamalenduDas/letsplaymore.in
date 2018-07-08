@@ -12,7 +12,9 @@ session_start();
 
       // $email = $_SESSION['email'];
 
-     $spt = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['spt']))," \t ")," \t ");
+     $spt1 = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['spt1']))," \t ")," \t ");
+     $spt2 = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['spt2']))," \t ")," \t ");
+     $spt3 = rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['spt3']))," \t ")," \t ");
      $amnts =  rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['amnts']))," \t ")," \t ");
      $addr =  rtrim(ltrim(strtoupper(mysqli_real_escape_string($con,$_POST['addr']))," \t ")," \t ");
      $pin = rtrim(ltrim(mysqli_real_escape_string($con,$_POST['pin'])," \t ")," \t ");
@@ -25,7 +27,7 @@ session_start();
 
         //validate non empty
 
-         if( !isset($spt) || $spt=='' || !isset($amnts) || $amnts=='' ||
+         if( !isset($spt1) || $spt1=='' || !isset($amnts) || $amnts=='' ||
            !isset($pin) || $pin == '' || !isset($price) || $price == '' ||
            !isset($addr) || $addr == '' ){
 
@@ -36,7 +38,7 @@ session_start();
            }
             else {
 
-                 $ins_query = "INSERT INTO `club-info` (`CID`, `CLUBNAME`, `SPORTS`, `ADDRESS`,`PIN`, `PRICE`,`AMNTES`) VALUES ('$cid','$club','$spt','$addr','$pin','$price','$amnts');";
+                 $ins_query = "INSERT INTO `club-info` (`CID`, `CLUBNAME`, `SPORT1`, `SPORT2`, `SPORT3`, `ADDRESS`,`PIN`, `PRICE`,`AMNTES`) VALUES ('$cid','$club','$spt1','$spt2','$spt3','$addr','$pin','$price','$amnts');";
 
 
 

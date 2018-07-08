@@ -1,14 +1,22 @@
-<?php session_start(); ?>
-<?php include '../database/database.php';
-
+<?php session_start();
+ include '../database/database.php';
+ date_default_timezone_set("India/Kolkata");
 
   $cid = $_SESSION['cid'];
   $clb = $_SESSION['clubname'];
+  $spt = $_SESSION['spt'];
 
   $date = date('Y-m-d');
   $s_date = date_create($date);
   date_add($s_date, date_interval_create_from_date_string('31 days'));
   $sdate = date_format($s_date, 'Y-m-d');
+
+  $query="SELECT * FROM `club-info` WHERE `CID`= $cid";
+  $rslt1 = mysqli_query($con,$query);
+  if(mysqli_num_rows($rslt1) == 0){
+    header('Location: mbr-sports-insert.php');
+     exit();
+  }
 
   if(!isset($_SESSION['cid'])){
          $error = "Please Login To Alter your availbility informtion !";
@@ -16,10 +24,11 @@
 
       }
 
-        elseif(isset($_GET['alter'])){
+        elseif(isset($_GET['alterBtn'])){
 
             $sdate = $_GET['sdate'];
-
+            $spt = $_GET['sptname'];
+            //echo $spt;
           }
           elseif(isset($_GET['succ'])){
 
@@ -37,7 +46,7 @@
         $msg = "Must be Minimum 30 & Maximun 60 days prior to alter booking data!";
       }
        else{
-            date_default_timezone_set("India/Kolkata");
+
 
              $sdate_yy = (int)substr($sdate,0,4);
 
@@ -46,19 +55,25 @@
              $sdate_dd = (int)substr($sdate,8,2);
 
 
-
-        $query = "select * from `book-info` where ( CLUBNAME= (SELECT `CLUBNAME` FROM `owner-info`
-        WHERE `CID`='$cid') AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
+           
+        $query = "select * from `book-info` where ( CID= $cid AND SPORT = '$spt' AND  YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
         AND DAY(DATE) = $sdate_dd);";
 
-        $query2 = "INSERT INTO `book-info` (`CLUBNAME`,`DATE`) VALUES ((SELECT `CLUBNAME` FROM `owner-info`
-          WHERE `CID`='$cid'),STR_TO_DATE('$sdate', '%Y-%m-%d'));";
+        $query2 = "INSERT INTO `book-info` (`CID`,`SPORT`,`DATE`) VALUES ($cid,'$spt',STR_TO_DATE('$sdate', '%Y-%m-%d'));";
 
-        mysqli_query($con, $query2);
+        if(!mysqli_query($con, $query2)){
+            echo "Error query2-----";
+            echo $cid."----";
+            echo $spt."----";
+            echo $sdate."----";
+        }
+        if(!mysqli_query($con,$query)){
+          echo "error query-----";
+        }
         $rslt = mysqli_query($con,$query);
-
+            //  echo $spt;
       }
-              ?>
+  ?>
 
 <!doctype html>
 <html lang="en">
@@ -119,12 +134,28 @@
   <br><br>
          <div class="container" style="background-color: #e0e0e0 ; padding: 60px;">
 
-           <h1 class="display-4" ><?php  echo " Manage Time Slots For "."" . $sdate . ""; ?></h1>
+           <h1 class="display-4" ><?php  echo " Manage Time Slots For ". $sdate; ?></h1>
 
 
            <form class="" action="alter-book.php" method="get">
+           <section>
+       <div class="input-group mb-3" >
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">SPORTS</label>
+            </div>
+            <select name="sptname"class="custom-select" id="inputGroupSelect01" >
+              <option value="#">Select Your Sport</option>
+                <!-- <option selected>Choose Your Preferred Sports</option> -->
+                <?php  while ($row = mysqli_fetch_assoc($rslt1)) : ?>
+            <option value= "<?php echo $row['SPORT1']; ?>"><?php echo $row['SPORT1']; ?></option>
+            <option value= "<?php echo $row['SPORT2']; ?>"><?php echo $row['SPORT2']; ?></option>
+            <option value= "<?php echo $row['SPORT3']; ?>"><?php echo $row['SPORT3']; ?></option>
+            <?php endwhile; ?>
+            </select>
+        </div>
+       </section>
              <input type="date" name="sdate" required>
-             <input type="submit" name="alter" >
+             <input type="submit" name="alterBtn" >
            </form>
          <hr>
              <div class="container">
@@ -163,7 +194,7 @@
                                 <table class="table table-responsive-md table-striped table-hover">
                                     <thead class="mdb-color darken-3">
                                         <tr>
-                                            <th class="th-lg" style="color: white;">Clubname</th>
+                                            <!-- <th class="th-lg" style="color: white;">Clubname</th> -->
                                             <th class="th-lg" style="color: white;">Date</th>
                                             <th class="th-lg" style="color: white;">Time</th>
                                             <th class="th-lg" style="color: white;">Availability</th>
@@ -175,7 +206,7 @@
 
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
                                             <td><?php echo $sdate; ?></td>
                                             <td>07:00 -- 08:00</td>
 
@@ -206,7 +237,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>08:00 -- 09:00</td>
@@ -238,7 +269,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>09:00 -- 10:00</td>
@@ -270,7 +301,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>10:00 -- 11:00</td>
@@ -302,7 +333,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>11:00 -- 12:00</td>
@@ -334,7 +365,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>12:00 -- 13:00</td>
@@ -366,7 +397,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>13:00 -- 14:00</td>
@@ -398,7 +429,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>14:00 -- 15:00</td>
@@ -430,7 +461,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>15:00 -- 16:00</td>
@@ -462,7 +493,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>16:00 -- 17:00</td>
@@ -494,7 +525,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>17:00 -- 18:00</td>
@@ -526,7 +557,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>18:00 -- 19:00</td>
@@ -558,7 +589,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>19:00 -- 20:00</td>
@@ -590,7 +621,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>20:00 -- 21:00</td>
@@ -622,7 +653,7 @@
                                         </tr>
                                         <tr>
 
-                                            <td><?php echo  $clb; ?></td>
+                                            <!-- <td><?php echo  $clb; ?></td> -->
 
                                             <td><?php echo $sdate; ?></td>
                                             <td>21:00 -- 22:00</td>

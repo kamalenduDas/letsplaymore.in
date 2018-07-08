@@ -24,11 +24,11 @@ if(isset($_POST['adminSubmit'])){
            if($count == 1){
 
                      $_SESSION['admid'] = $admid;
-                       header("location: /admin/admin.php");
+                       header("location: ../admin/admin.php");
               }
            else {
                 $error = "Your Login Name or Password is invalid";
-                header('location: /admin/admin_login.php?succ='.urlencode($error));
+                header('location: ../admin/admin_login.php?succ='.urlencode($error));
             }
 
 

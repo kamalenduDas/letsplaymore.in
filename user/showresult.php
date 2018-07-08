@@ -12,6 +12,8 @@ if(isset($_SESSION['uid'])){
 
         $spt = strtoupper(mysqli_real_escape_string($con,$_GET['sptname']));
         $str1 = strtoupper(mysqli_real_escape_string($con,$_GET['pin']));
+        $loc1 = "NULL";
+        $loc2 = "NULL";
     // check if entered value is string or numeric
          if( is_numeric($str1)){
            preg_match_all('!\d+!', $str1, $matches);
@@ -32,7 +34,7 @@ if(isset($_SESSION['uid'])){
          }
             $_SESSION["spt"] = $spt ;
             $_SESSION["loc"] = $loc;
-           $query = "select * from `club-info` where SPORTS='$spt' and (ADDRESS LIKE '%$loc1%' OR ADDRESS LIKE '%$loc2%'OR PIN LIKE '%$loc%') and `MBR` = 1;";
+           $query = "select * from `club-info` where (SPORT1='$spt' OR SPORT2='$spt' OR SPORT3='$spt') and (ADDRESS LIKE '%$loc1%' OR ADDRESS LIKE '%$loc2%'OR PIN LIKE '%$loc%') and `MBR` = 1;";
        $rslt = mysqli_query($con,$query);
     ?>
 <!doctype html>
@@ -122,7 +124,7 @@ if(isset($_SESSION['uid'])){
            <p class="card-text" style="color: #e0e0e0"><?php echo strtoupper($row['ADDRESS']); ?></p>
            <!-- <a href="#" class="btn btn-primary" type="submit">Book Now</a> -->
            <button type="submit" class="btn btn-outline-success" name="clubname" value="<?php echo $row['CLUBNAME']; ?>">Book Now</button>
-           <!-- <input type="text" name="" value=""> -->
+           <input type="hidden" name="sport" value="<?php echo $spt;?>">
       </div>
       </div>
     </form>

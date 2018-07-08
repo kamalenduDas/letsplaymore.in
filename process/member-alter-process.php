@@ -5,6 +5,7 @@ include '../database/database.php';
 $clb = '';
 $sdate = date("Y-m-d");
 $status = '';
+$spt=$_SESSION['spt'];
 
 if(isset($_POST['slot-book'])){
 $cid = $_SESSION['cid'];
@@ -41,8 +42,7 @@ if(!isset($_SESSION['cid'])){
   exit();
 }else {
 
-  $query3 = "UPDATE `book-info` SET ".$col."= '$status' WHERE ( CLUBNAME= (SELECT `CLUBNAME` FROM `owner-info`
-      WHERE `CID`='$cid') AND YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
+  $query3 = "UPDATE `book-info` SET ".$col."= '$status' WHERE ( CID= $cid AND SPORT = '$spt' AND YEAR(DATE)=$sdate_yy AND MONTH(DATE)=$sdate_mm
   AND DAY(DATE) = $sdate_dd);" ;
 }
 
